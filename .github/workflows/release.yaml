@@ -1,4 +1,4 @@
-name: 'C++ CI'
+name: 'C++ CI print_ip'
 
 on:
   push:

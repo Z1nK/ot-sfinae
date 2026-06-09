@@ -10,7 +10,8 @@ void print_ip(const T &value) {
   const unsigned char *ptr = reinterpret_cast<const unsigned char *>(&value);
   for (int i = sizeof(T) - 1; i >= 0; --i) {
     std::cout << static_cast<int>(ptr[i]);
-    if (i > 0) std::cout << ".";
+    if (i > 0)
+      std::cout << ".";
   }
   std::cout << std::endl;
 }
@@ -20,24 +21,28 @@ void print_ip(const T &value) {
   std::cout << value << std::endl;
 };
 
-template <typename T, std::enable_if_t<std::is_same_v<T, std::string>, int> = 0>
-void print_ip(const T &value) {
-  std::cout << value << std::endl;
-};
-
 // for containers
+
+template <typename T, typename = std::void_t<>>
+struct is_streamable : std::false_type {};
+
+template <typename T>
+struct is_streamable<T, std::void_t<decltype(std::declval<std::ostream &>() << std::declval<T>())>>
+    : std::true_type {};
 
 template <typename T, typename = std::void_t<>>
 struct is_container : std::false_type {};
 
 template <typename T>
-struct is_container<T, std::void_t<decltype(std::declval<T>().begin()),
-                                   decltype(std::declval<T>().end())>>
+struct is_container<
+    T,
+    std::void_t<decltype(std::declval<T>().begin()), decltype(std::declval<T>().end())>>
     : std::true_type {};
 
-template <typename T, std::enable_if_t<is_container<T>::value &&
-                                           !std::is_same_v<T, std::string>,
-                                       int> = 0>
+// template <typename T, std::enable_if_t<is_container<T>::value &&
+//                                            !std::is_same_v<T, std::string>,
+//                                        int> = 0>
+template <typename T, std::enable_if_t<is_container<T>::value && !is_streamable<T>::value, int> = 0>
 void print_ip(const T &value) {
   auto it = value.begin();
   auto end = value.end();
@@ -50,6 +55,18 @@ void print_ip(const T &value) {
     std::cout << "." << *it;
   }
   std::cout << std::endl;
+}
+
+// for string
+
+// template <typename T, std::enable_if_t<std::is_same_v<T, std::string>, int> =
+// 0> void print_ip(const T &value) {
+//   std::cout << value << std::endl;
+// };
+
+template <typename T, std::enable_if_t<std::is_same_v<typename T::value_type, char>, int> = 0>
+void print_ip(const T &value) {
+  std::cout << value << std::endl;
 }
 
 //  for Tuple

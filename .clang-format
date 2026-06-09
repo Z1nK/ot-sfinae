@@ -1,0 +1,18 @@
+BasedOnStyle: Google
+AccessModifierOffset: -2
+AllowAllConstructorInitializersOnNextLine: true
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeBraces: Attach
+BreakConstructorInitializers : BeforeComma
+ColumnLimit: 100
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+IndentCaseLabels: false
+IndentWidth: 2
+PointerAlignment: Left
+UseTab: Never
+BinPackParameters: false
+AllowAllParametersOfDeclarationOnNextLine: false
