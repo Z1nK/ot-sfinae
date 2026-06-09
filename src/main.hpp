@@ -71,6 +71,9 @@ void print_ip(const T &value) {
 
 //  for Tuple
 
+template <typename First, typename... Args>
+inline constexpr bool is_all_same_v = (std::is_same_v<First, Args> && ...);
+
 template <typename T>
 struct is_tuple : std::false_type {};
 template <typename... Args>
@@ -82,6 +85,8 @@ template <typename T, std::enable_if_t<is_tuple_v<T>, int> = 0>
 void print_ip(const T &value) {
   std::apply(
       [](const auto &first, const auto &...args) {
+        static_assert(is_all_same_v<decltype(first), decltype(args)...>,
+                      "All tuple elements must be of the same type");
         std::cout << first;
         ((std::cout << "." << args), ...);
       },
