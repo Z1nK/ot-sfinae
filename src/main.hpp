@@ -25,6 +25,8 @@ void print_ip(const T &value) {
   std::cout << value << std::endl;
 };
 
+// for containers
+
 template <typename T, typename = std::void_t<>>
 struct is_container : std::false_type {};
 
@@ -47,5 +49,25 @@ void print_ip(const T &value) {
   for (; it != end; ++it) {
     std::cout << "." << *it;
   }
+  std::cout << std::endl;
+}
+
+//  for Tuple
+
+template <typename T>
+struct is_tuple : std::false_type {};
+template <typename... Args>
+struct is_tuple<std::tuple<Args...>> : std::true_type {};
+template <typename T>
+inline constexpr bool is_tuple_v = is_tuple<T>::value;
+
+template <typename T, std::enable_if_t<is_tuple_v<T>, int> = 0>
+void print_ip(const T &value) {
+  std::apply(
+      [](const auto &first, const auto &...args) {
+        std::cout << first;
+        ((std::cout << "." << args), ...);
+      },
+      value);
   std::cout << std::endl;
 }
