@@ -46,23 +46,12 @@ jobs:
         with:
           name: deb-package
 
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
+      - name: Create GitHub Release and upload asset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.run_number }}
-          release_name: Release ${{ github.run_number }}
-          draft: false
-          prerelease: false
-
-      - name: Upload release asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./print_ip-0.0.${{ github.run_number }}-Linux.deb
-          asset_name: print_ip-0.0.${{ github.run_number }}-Linux.deb
-          asset_content_type: application/vnd.debian.binary-package
+        run: |
+          gh release create ${{ github.run_number }} \
+            --repo ${{ github.repository }} \
+            --title "Release ${{ github.run_number }}" \
+            --notes "Automated release ${{ github.run_number }}" \
+            ./print_ip-0.0.${{ github.run_number }}-Linux.deb
