@@ -11,7 +11,6 @@
  * Bytes are printed from the most significant to the least significant.
  *
  * @tparam T Integral type.
- * @param value Value to print.
  */
 template <typename T, std::enable_if_t<std::is_integral_v<T>, int> = 0>
 void print_ip(const T &value) {
@@ -28,7 +27,6 @@ void print_ip(const T &value) {
  * @brief Print a floating-point value as-is.
  *
  * @tparam T Floating-point type.
- * @param value Value to print.
  */
 template <typename T, std::enable_if_t<std::is_floating_point_v<T>, int> = 0>
 void print_ip(const T &value) {
@@ -82,7 +80,6 @@ struct is_container<
  * Elements are printed in iteration order and separated by dots.
  *
  * @tparam T Container type whose elements are streamable.
- * @param value Container to print.
  */
 template <typename T, std::enable_if_t<is_container<T>::value && !is_streamable<T>::value, int> = 0>
 void print_ip(const T &value) {
@@ -112,7 +109,6 @@ void print_ip(const T &value) {
  * This overload is intended for string-like types with char value_type.
  *
  * @tparam T String-like type.
- * @param value String value to print.
  */
 template <typename T, std::enable_if_t<std::is_same_v<typename T::value_type, char>, int> = 0>
 void print_ip(const T &value) {
@@ -160,7 +156,6 @@ inline constexpr bool is_tuple_v = is_tuple<T>::value;
  * All tuple elements must be of the same type.
  *
  * @tparam T Tuple type.
- * @param value Tuple to print.
  */
 template <typename T, std::enable_if_t<is_tuple_v<T>, int> = 0>
 void print_ip(const T &value) {
