@@ -7,20 +7,47 @@ on:
 
 jobs:
   build:
+    name: Build & Package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y libgtest-dev
+
+      - name: Configure
+        run: cmake . -DPATCH_VERSION=${{ github.run_number }}
+
+      - name: Build
+        run: cmake --build .
+
+      - name: Create package
+        run: cmake --build . --target package
+
+      - name: Upload .deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deb-package
+          path: print_ip-0.0.${{ github.run_number }}-Linux.deb
+          retention-days: 1
+
+  release:
+    name: Release
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v2
+      - name: Download .deb artifact
+        uses: actions/download-artifact@v4
         with:
-          submodules: true
-      - run: sudo apt-get update && sudo apt-get install libgtest-dev -y
-      - run: cmake . -DPATCH_VERSION=${{ github.run_number }}
-      - run: cmake --build .      
-      - run: cmake --build . --target package
-      - name: Create Release        
+          name: deb-package
+
+      - name: Create GitHub Release
         id: create_release
-        if: github.ref == 'refs/heads/main'
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -29,9 +56,8 @@ jobs:
           release_name: Release ${{ github.run_number }}
           draft: false
           prerelease: false
-      - name: Upload Release Asset        
-        id: upload-release-asset
-        if: github.ref == 'refs/heads/main'
+
+      - name: Upload release asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
